@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  DEPLOY_DEV_ENV: ${{ env.DEPLOY_DEV_ENV }}
+  DEPLOY_DEV_ENV: ${{ DEPLOY_DEV_ENV }}
 
 jobs:
   deploy:
