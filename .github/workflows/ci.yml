@@ -11,6 +11,9 @@ env:
 jobs:
   deploy:
     runs-on: self-hosted
+    
+    env:
+      DEPLOY_DEV_ENV: Development
 
     steps:
     - name: Checkout code
