@@ -16,10 +16,10 @@ jobs:
     - name: Copy files to deployment directory
       run: |
         pwd
-        cp -R ./* /var/www/laravel_demo
+        cp -R ./* /var/www/project-management
 
     - name: Change to deployment directory
-      run: cd /var/www/laravel_demo
+      run: cd /var/www/project-management
 
     - name: Create .env file
       run: echo "$DEPLOY_DEV_ENV" > .env
