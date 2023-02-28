@@ -1,0 +1,23 @@
+stages:
+  - DeployTest
+variables:
+  DEPLOY_DEV_ENV: $DEPLOY_DEV_ENV
+DeployTest:
+  stage: DeployTest
+  only:
+   - main  
+  tags: 
+   - api-project
+  script:
+   - pwd
+   - cp -r ./* /var/www/project
+  #  - cd  /var/www/acms_wiki_api && winpty docker-compose exec app ls -l
+   - cd  /var/www/project && echo "$DEPLOY_TEST_ENV" > .env
+   - cd  /var/www/project && docker-compose up -d
+   - cd  /var/www/project && docker-compose exec -T app composer install
+   - cd  /var/www/project && docker-compose exec -T app rm -rf public/storage
+  #  - cd  /var/www/acms_wiki_api && docker-compose exec -T app php artisan storage:link
+   - cd  /var/www/project && docker-compose exec -T app composer dumpautoload
+   - cd  /var/www/project && docker-compose exec -T app php artisan config:cache
+   - cd  /var/www/project && docker-compose exec -T app php artisan route:cache
+  #  - cd  /var/www/project && docker-compose exec -T app php artisan migrate
