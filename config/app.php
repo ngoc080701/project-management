@@ -214,4 +214,7 @@ return [
         'Moloquent' => Jenssegers\Mongodb\Eloquent\Model::class,
     ])->toArray(),
 
+
+    'jwt_secret' => env('JWT_SECRET'),
+    'jwt_algo' => env('JWT_ALGO'),
 ];
