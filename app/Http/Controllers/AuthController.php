@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Enum\AuthConst;
 use App\Http\Requests\RegisterRequest;
 use Exception;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Support\Facades\Auth;
+use Firebase\JWT\JWT;
 use MongoDB\Client;
 
 class AuthController extends BaseController
@@ -20,7 +18,6 @@ class AuthController extends BaseController
         try {
             $client = new Client('mongodb+srv://team:Duan2023@teammanagement.nznugpk.mongodb.net');
             $collection = $client->team_management->users;
-            dd($collection);
             $data = $request->all();
             $data['password'] = bcrypt($request->password);
             $user = $collection->findOne(['email' => $data['email']]);
@@ -42,31 +39,22 @@ class AuthController extends BaseController
                     );
                 }
                 $user = $collection->findOne(['email' => $data['email']]);
-                $token = Auth::attempt($request->only('email', 'password'));
-                dd($token);
-                $token = auth(AuthConst::GUARD_API)->attempt([
+                $payload = [
+                    'id' => (string) $user->_id,
                     'email' => $user->email,
-                    'password' => $data["password"]
-                ]);
+                    // Add any other fields you want to include in the token
+                ];
+                $token = JWT::encode($payload, env('JWT_SECRET'), env('JWT_ALGO'));
                 if (empty($token)) {
                     return $this->errorResult(new Exception(__('Authentication attempt failed.')));
                 }
-                event(new Registered($user));
-
             }
-            event(new Registered($user));
-
-            DB::commit();
             return $this->okResult(
-                new RegisterResource(
-                    new UserResource($user),
-                    $token,
-                    AuthConst::TOKEN_TYPE,
-                    auth(AuthConst::GUARD_API)->factory(null)->getTTL() * 60,
-                    $user->verification_url
-                )
+                [
+                    'user' => $user->jsonSerialize(),
+                    'token' => $token
+                ]
             );
-            return $this->okResult([]);
         } catch (Exception $e) {
             return $this->errorResult($e);
         }
