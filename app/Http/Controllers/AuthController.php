@@ -6,14 +6,14 @@ use App\Http\Requests\BaseFormRequest;
 use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\VerifyRequest;
+use App\Jobs\SendMailRegisterJob;
 use Carbon\Carbon;
 use Exception;
 use Firebase\JWT\JWT;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Testing\Fluent\Concerns\Has;
 use MongoDB\Client;
 
 class AuthController extends BaseController
@@ -60,23 +60,30 @@ class AuthController extends BaseController
                     return $this->errorResult(new Exception(__('Authentication attempt failed.')));
                 }
             }
-//            $urlVerify = URL::temporarySignedRoute(
-//                'verification.verify',
-//                Carbon::now()->addMinutes(30),
-//                [
-//                    'id' => $user->getKey(),
-//                    'hash' => sha1($user->getEmailForVerification()),
-//                ]
-//            );
+            $urlVerify = URL::temporarySignedRoute(
+                'verification.verify',
+                Carbon::now()->addMinutes(30),
+                [
+                    'id' => $user->_id,
+                    'hash' => sha1($user->email),
+                ]
+            );
+            SendMailRegisterJob::dispatch($user, $urlVerify);
             return $this->okResult(
                 [
                     'user' => $user->jsonSerialize(),
                     'token' => $token,
+                    'url' => $urlVerify
                 ]
             );
         } catch (Exception $e) {
             return $this->errorResult($e);
         }
+    }
+
+    public function verifyEmail(VerifyRequest $request)
+    {
+
     }
 
     public function login(LoginRequest $request): \Illuminate\Http\JsonResponse
