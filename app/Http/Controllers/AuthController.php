@@ -30,7 +30,7 @@ class AuthController extends BaseController
             $data = $request->all();
             $data['password'] = bcrypt($request->password);
             $user = $collection->findOne(['email' => $data['email']]);
-            if (isset($user->email_verified_at)) {
+            if ($user->email === $request) {
                 return $this->unprocessableEntityResult('',
                     '',
                     '', [
