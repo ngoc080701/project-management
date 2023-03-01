@@ -42,7 +42,6 @@ class AuthController extends BaseController
                 $payload = [
                     'id' => (string) $user->_id,
                     'email' => $user->email,
-                    // Add any other fields you want to include in the token
                 ];
                 $token = JWT::encode($payload, env('JWT_SECRET'), env('JWT_ALGO'));
                 if (empty($token)) {
