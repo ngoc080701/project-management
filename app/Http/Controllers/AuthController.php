@@ -37,7 +37,7 @@ class AuthController extends BaseController
             ];
             $data['password'] = bcrypt($request->password);
             $user = $collection->findOne(['email' => $data['email']]);
-            if (isset($user->email_verified_at)) {
+            if ($user->email == $request->email) {
                 return $this->unprocessableEntityResult('',
                     '',
                     '', [
@@ -75,7 +75,7 @@ class AuthController extends BaseController
                     'hash' => sha1($user->email),
                 ]
             );
-            SendMailRegisterJob::dispatch($user, $urlVerify);
+//            SendMailRegisterJob::dispatch($user, $urlVerify);
             return $this->okResult(
                 [
                     'user' => $user->jsonSerialize(),
