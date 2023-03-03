@@ -17,10 +17,11 @@ class RegisterRequest extends BaseFormRequest
         return [
             'email' => ['required', 'email:rfc,dns'],
             'password' => ['required', 'min:8', 'max:32'],
-            'first_name' => ['required', new NameRule()],
-            'last_name' => ['required', new NameRule()],
-            'birthday' => ['required', 'before:now', 'date_format:Y-m-d'],
-            'address' => ['nullable']
+            'full_name' => ['required', new NameRule()],
+            'dob' => ['nullable', 'before:now', 'date_format:Y-m-d'],
+            'address' => ['nullable'],
+            'phone_number' => ['nullable'],
+            'gender' => ['nullable'],
         ];
     }
 }

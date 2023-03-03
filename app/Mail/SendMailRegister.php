@@ -37,7 +37,7 @@ class SendMailRegister extends Mailable
         return $this->subject("XÁC NHẬN ĐĂNG KÝ TÀI KHOẢN")
             ->from(config('mail.from.address'), config('mail.from.name'))
             ->view('email_verification', [
-                'name' => $this->user->last_name,
+                'name' => $this->user->full_name,
                 'url' => $this->url
             ]);
     }

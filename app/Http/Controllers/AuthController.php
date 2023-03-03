@@ -27,10 +27,17 @@ class AuthController extends BaseController
         try {
             $client = new Client('mongodb+srv://team:Duan2023@teammanagement.nznugpk.mongodb.net');
             $collection = $client->team_management->users;
-            $data = $request->all();
+            $data = [
+                'full_name' => $request->full_name,
+                'email' => $request->email,
+                'dob' => $request->dob ?? null,
+                'address' => $request->address ?? null,
+                'phone_number' => $request->phone_number ?? null,
+                'gender' => $request->gender ?? null,
+            ];
             $data['password'] = bcrypt($request->password);
             $user = $collection->findOne(['email' => $data['email']]);
-            if ($user->email === $request) {
+            if (isset($user->email_verified_at)) {
                 return $this->unprocessableEntityResult('',
                     '',
                     '', [
